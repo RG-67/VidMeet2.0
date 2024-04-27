@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VidMeet2.0</string>
+    <string name="login_welcome_text"><font color="#808080" size="14">Welcome to </font><b><font color="#000000" size="15">VidMeet2.0</font></b></string>
 </resources>
