@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="back_img_dimen">40dp</dimen>
+    <dimen name="edtText_dimen">40dp</dimen>
+</resources>
