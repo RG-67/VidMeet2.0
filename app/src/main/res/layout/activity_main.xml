@@ -7,9 +7,61 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <org.webrtc.SurfaceViewRenderer
-        android:id="@+id/surfaceRender"
+    <!-- Start and play layout -->
+    <LinearLayout
+        android:id="@+id/stAndPlLin"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter text.."
+            android:layout_margin="10dp">
+            <EditText
+                android:id="@+id/edtID"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/black"
+                android:fontFamily="sans-serif"
+                android:textSize="15sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp">
+            <Button
+                android:id="@+id/startBtn"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Start"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_marginEnd="5dp"/>
+
+            <Button
+                android:id="@+id/playBtn"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="play"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:backgroundTint="@color/green"
+                android:layout_marginStart="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Surface view render -->
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/surfaceRender"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
 </RelativeLayout>
