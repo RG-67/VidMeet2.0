@@ -3,25 +3,26 @@ package com.project.vidmeet20
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.Window
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.snackbar.Snackbar
 import com.project.vidmeet20.databinding.ActivityMainBinding
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
 import org.webrtc.Camera1Enumerator
 import org.webrtc.CameraEnumerator
 import org.webrtc.EglBase
+import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
+import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
+import org.webrtc.PeerConnection.IceServer
+import org.webrtc.PeerConnection.RTCConfiguration
 import org.webrtc.PeerConnectionFactory
+import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -72,14 +73,47 @@ class MainActivity : AppCompatActivity() {
             ?.let { peerConnectionFactory.createVideoSource(it) }
 
         val eglBase: EglBase.Context = EglBase.create().eglBaseContext
-        val surfaceTextureHelper: SurfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase)
+        val surfaceTextureHelper: SurfaceTextureHelper =
+            SurfaceTextureHelper.create("CaptureThread", eglBase)
         videoCapturer?.initialize(surfaceTextureHelper, this, videoSource?.capturerObserver)
         videoCapturer?.startCapture(250, 250, 30) /*Video_HEIGHT,VIDEO_WIDTH, VIDEO_FPS*/
 
-        val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack("VIDEO_TRACK_ID", videoSource)
+        val videoTrack: VideoTrack =
+            peerConnectionFactory.createVideoTrack("VIDEO_TRACK_ID", videoSource)
         val audioSource: AudioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
-        val audioTrack: AudioTrack = peerConnectionFactory.createAudioTrack("AUDIO_TRACK_ID", audioSource)
+        val audioTrack: AudioTrack =
+            peerConnectionFactory.createAudioTrack("AUDIO_TRACK_ID", audioSource)
 
+        val iceServers: ArrayList<IceServer> = ArrayList()
+        iceServers.add(IceServer.builder("stun:stun.l.google.com:19302").createIceServer())
+        iceServers.add(
+//            IceServer.builder("turn:your-turn-server.com:3478")
+            IceServer.builder("turn:stun.l.google.com:19302")
+                .setUsername("")
+                .setPassword("")
+                .createIceServer()
+        )
+
+        val rtcConfiguration: PeerConnection.RTCConfiguration =
+            PeerConnection.RTCConfiguration(iceServers)
+        val peerConnection: PeerConnection? = peerConnectionFactory.createPeerConnection(rtcConfiguration, object: CustomPeerConnectionObserver("localPeerCreation") {
+            override fun onIceCandidate(p0: IceCandidate?) {
+                super.onIceCandidate(p0)
+            }
+
+            override fun onAddStream(p0: MediaStream?) {
+                super.onAddStream(p0)
+            }
+        })
+
+        peerConnection?.createOffer(object: CustomSdpObserver("localCreateOffer") {
+            override fun onCreateSuccess(p0: SessionDescription?) {
+                super.onCreateSuccess(p0)
+                peerConnection.setLocalDescription(CustomSdpObserver("localSetLocalDesc"), p0)
+            }
+        }, MediaConstraints())
+
+//        peerConnection?.setRemoteDescription(object: CustomSdpObserver(""), )
 
     }
 
