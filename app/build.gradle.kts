@@ -53,4 +53,9 @@ dependencies {
 //    implementation (libs.webrtc.android.framework)
     // google webrtc
     implementation (libs.google.webrtc)
+    // web-socket
+    implementation ("org.java-websocket:Java-WebSocket:1.5.2")
+    // okHTTP
+    implementation (libs.okhttp)
+
 }
