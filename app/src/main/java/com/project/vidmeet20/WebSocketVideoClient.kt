@@ -14,7 +14,15 @@ class WebSocketVideoClient(serverUri: URI) : WebSocketClient(serverUri) {
     }
 
     override fun onMessage(message: String?) {
-        TODO("Not yet implemented")
+        message?.let {
+            try {
+                val sdpJson = JSONObject(it)
+                val type = sdpJson.getString("type")
+                val sdp = sdpJson.getString("sdp")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
@@ -22,27 +30,34 @@ class WebSocketVideoClient(serverUri: URI) : WebSocketClient(serverUri) {
     }
 
     override fun onError(ex: Exception?) {
-        TODO("Not yet implemented")
+        ex?.printStackTrace()
     }
 
-    companion object {
+    /*companion object {
         @JvmStatic
         fun main(args: Array<String>) {
             val client = WebSocketVideoClient(URI("ws://localhost:8080"))
             client.connect()
-//            setSdp(client)
+            setSdp(client)
         }
-//        private fun setSdp(client: WebSocketClient) {
+        private fun setSdp(client: WebSocketClient) {
 //            sending sdp message
-//            val sdpJson = JSONObject()
-//            sdpJson.put("type", "offer")
-//            sdpJson.put("sdp", "") /*insert sdp string*/
+            val sdpJson = JSONObject()
+            sdpJson.put("type", "offer")
+            sdpJson.put("sdp", "") *//*insert sdp string*//*
+            client.send(sdpJson.toString())
 
-//            client.send(sdpJson.toString())
+        }
 
-//            receiving sdp message
-//        }
+    }*/
 
+    fun createClient(offerSdp: String) {
+        val client = WebSocketVideoClient(URI("ws://localhost:8080"))
+        client.connect()
+        val sdpJson = JSONObject()
+        sdpJson.put("type", "offer")
+        sdpJson.put("sdp", offerSdp)
+        client.send(sdpJson.toString())
     }
 
 

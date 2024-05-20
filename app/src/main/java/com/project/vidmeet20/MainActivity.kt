@@ -17,11 +17,13 @@ import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.IceServer
 import org.webrtc.PeerConnection.RTCConfiguration
 import org.webrtc.PeerConnectionFactory
+import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import java.net.URI
 
 
 class MainActivity : AppCompatActivity() {
@@ -113,7 +115,48 @@ class MainActivity : AppCompatActivity() {
             }
         }, MediaConstraints())
 
-//        peerConnection?.setRemoteDescription(object: CustomSdpObserver(""), )
+        peerConnection?.createOffer(object : SdpObserver {
+            override fun onCreateSuccess(p0: SessionDescription?) {
+                TODO("Not yet implemented")
+                peerConnection.setLocalDescription(object: SdpObserver {
+                    override fun onCreateSuccess(p0: SessionDescription?) {
+
+                    }
+
+                    override fun onSetSuccess() {
+                        val offerSdp = p0?.description
+                        if (offerSdp != null) {
+                            val uri = URI("ws://localhost:8080")
+                            WebSocketVideoClient(uri)?.createClient(offerSdp)
+                        }
+                    }
+
+                    override fun onCreateFailure(p0: String?) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onSetFailure(p0: String?) {
+                        TODO("Not yet implemented")
+                    }
+
+                }, p0)
+            }
+
+            override fun onSetSuccess() {
+
+            }
+
+            override fun onCreateFailure(p0: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSetFailure(p0: String?) {
+                TODO("Not yet implemented")
+            }
+
+        }, MediaConstraints())
+
+
 
     }
 
