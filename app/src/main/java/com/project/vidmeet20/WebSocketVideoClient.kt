@@ -9,6 +9,8 @@ import java.net.URI
 
 class WebSocketVideoClient(serverUri: URI) : WebSocketClient(serverUri) {
 
+    private val client = WebSocketVideoClient(URI("ws://localhost:8080"))
+
     override fun onOpen(handshakedata: ServerHandshake?) {
         TODO("Not yet implemented")
     }
@@ -23,6 +25,10 @@ class WebSocketVideoClient(serverUri: URI) : WebSocketClient(serverUri) {
                 e.printStackTrace()
             }
         }
+    }
+
+    override fun connect() {
+        super.connect()
     }
 
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
@@ -52,7 +58,6 @@ class WebSocketVideoClient(serverUri: URI) : WebSocketClient(serverUri) {
     }*/
 
     fun createClient(offerSdp: String) {
-        val client = WebSocketVideoClient(URI("ws://localhost:8080"))
         client.connect()
         val sdpJson = JSONObject()
         sdpJson.put("type", "offer")
@@ -60,5 +65,8 @@ class WebSocketVideoClient(serverUri: URI) : WebSocketClient(serverUri) {
         client.send(sdpJson.toString())
     }
 
+    override fun send(message: String) {
+        client.send(message)
+    }
 
 }

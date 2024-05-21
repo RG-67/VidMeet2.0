@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     //    private lateinit var webRtcClient: IWebRTCClient
     private var randomID = ""
     private lateinit var peerConnectionFactory: PeerConnectionFactory
+    private lateinit var peerConnection: PeerConnection
 
     companion object {
         const val sub = "Your Meeting ID - "
@@ -96,29 +97,37 @@ class MainActivity : AppCompatActivity() {
                 .createIceServer()
         )
 
-        val rtcConfiguration: PeerConnection.RTCConfiguration =
-            PeerConnection.RTCConfiguration(iceServers)
-        val peerConnection: PeerConnection? = peerConnectionFactory.createPeerConnection(rtcConfiguration, object: CustomPeerConnectionObserver("localPeerCreation") {
-            override fun onIceCandidate(p0: IceCandidate?) {
-                super.onIceCandidate(p0)
-            }
+        val rtcConfiguration =
+            RTCConfiguration(iceServers)
+        rtcConfiguration.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
+        try {
+            peerConnection =
+                peerConnectionFactory.createPeerConnection(rtcConfiguration, PeerConnectionObserver())!!
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        peerConnection = peerConnectionFactory.createPeerConnection(
+            rtcConfiguration,
+            object : CustomPeerConnectionObserver("localPeerCreation", peerConnection) {
+                override fun onIceCandidate(p0: IceCandidate?) {
+                    super.onIceCandidate(p0)
+                }
 
-            override fun onAddStream(p0: MediaStream?) {
-                super.onAddStream(p0)
-            }
-        })
+                override fun onAddStream(p0: MediaStream?) {
+                    super.onAddStream(p0)
+                }
+            })!!
 
-        peerConnection?.createOffer(object: CustomSdpObserver("localCreateOffer") {
+        peerConnection.createOffer(object : CustomSdpObserver("localCreateOffer") {
             override fun onCreateSuccess(p0: SessionDescription?) {
                 super.onCreateSuccess(p0)
                 peerConnection.setLocalDescription(CustomSdpObserver("localSetLocalDesc"), p0)
             }
         }, MediaConstraints())
 
-        peerConnection?.createOffer(object : SdpObserver {
+        peerConnection.createOffer(object : SdpObserver {
             override fun onCreateSuccess(p0: SessionDescription?) {
-                TODO("Not yet implemented")
-                peerConnection.setLocalDescription(object: SdpObserver {
+                peerConnection.setLocalDescription(object : SdpObserver {
                     override fun onCreateSuccess(p0: SessionDescription?) {
 
                     }
@@ -127,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                         val offerSdp = p0?.description
                         if (offerSdp != null) {
                             val uri = URI("ws://localhost:8080")
-                            WebSocketVideoClient(uri)?.createClient(offerSdp)
+                            WebSocketVideoClient(uri).createClient(offerSdp)
                         }
                     }
 
@@ -156,7 +165,11 @@ class MainActivity : AppCompatActivity() {
 
         }, MediaConstraints())
 
-
+        val remoteStream: MediaStream = peerConnectionFactory.createLocalMediaStream("remoteStream")
+        remoteStream.addTrack(audioTrack)
+        remoteStream.addTrack(videoTrack)
+        videoCapturer?.stopCapture()
+        videoCapturer?.dispose()
 
     }
 
