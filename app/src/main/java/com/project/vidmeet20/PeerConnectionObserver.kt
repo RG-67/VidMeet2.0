@@ -1,5 +1,6 @@
 package com.project.vidmeet20
 
+import android.util.Log
 import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
@@ -8,46 +9,49 @@ import org.webrtc.RtpReceiver
 
 class PeerConnectionObserver : PeerConnection.Observer {
     override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnSigChange-->", "onSignalState: $p0");
     }
 
     override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
-        TODO("Not yet implemented")
+        Log.d("PeerIceConnectionChange-->", "onIceConnectionChange: $p0");
     }
 
     override fun onIceConnectionReceivingChange(p0: Boolean) {
-        TODO("Not yet implemented")
+        Log.d("PeerOnIceConReChange-->", "onIceConReChange: $p0");
     }
 
     override fun onIceGatheringChange(p0: PeerConnection.IceGatheringState?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnIceGathering-->", "onIceGatheringState: $p0");
     }
 
     override fun onIceCandidate(p0: IceCandidate?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnIceCandidate-->", "onIceCandidate: $p0");
     }
 
     override fun onIceCandidatesRemoved(p0: Array<out IceCandidate>?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnIceCanRemove-->", "onIceCanRemove: $p0");
     }
 
     override fun onAddStream(p0: MediaStream?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnAddStream-->", "onAddStream: $p0");
     }
 
     override fun onRemoveStream(p0: MediaStream?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnRemoveStream-->", "onRemoveStream: $p0");
     }
 
     override fun onDataChannel(p0: DataChannel?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnDataChanel-->", "onDataChannel: $p0");
     }
 
     override fun onRenegotiationNeeded() {
-        TODO("Not yet implemented")
+
     }
 
     override fun onAddTrack(p0: RtpReceiver?, p1: Array<out MediaStream>?) {
-        TODO("Not yet implemented")
+        Log.d("PeerConnectionOnAddTrack-->", "onAddTrack: $p0");
     }
+
+
+
 }

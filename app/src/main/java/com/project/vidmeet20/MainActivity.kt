@@ -69,7 +69,8 @@ class MainActivity : AppCompatActivity() {
         val initOptions: PeerConnectionFactory.InitializationOptions =
             builder.createInitializationOptions()
         PeerConnectionFactory.initialize(initOptions)
-        peerConnectionFactory = PeerConnectionFactory.builder().createPeerConnectionFactory()
+        val options = PeerConnectionFactory.Options()
+        peerConnectionFactory = PeerConnectionFactory.builder().setOptions(options).createPeerConnectionFactory()
 
         val videoCapturer: VideoCapturer? = createCameraCapturer(Camera1Enumerator(false))
         val videoSource: VideoSource? = videoCapturer?.isScreencast
@@ -96,17 +97,25 @@ class MainActivity : AppCompatActivity() {
                 .setPassword("")
                 .createIceServer()
         )
+        if (iceServers.isEmpty()) {
+            Log.e("ICE Servers", "ICE servers list is empty")
+        } else {
+            Log.d("ICE Servers", "ICE servers list is properly set up")
+        }
 
         val rtcConfiguration =
             RTCConfiguration(iceServers)
         rtcConfiguration.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
-        try {
-            peerConnection =
-                peerConnectionFactory.createPeerConnection(rtcConfiguration, PeerConnectionObserver())!!
-        } catch (e: Exception) {
-            e.printStackTrace()
+
+        peerConnection =
+            peerConnectionFactory.createPeerConnection(rtcConfiguration, PeerConnectionObserver())!!
+        if (peerConnection == null) {
+            Log.e("PeerConnection", "Failed to create PeerConnection")
+        } else {
+            Log.d("PeerConnection", "PeerConnection created successfully")
         }
-        peerConnection = peerConnectionFactory.createPeerConnection(
+
+        /*peerConnection = peerConnectionFactory.createPeerConnection(
             rtcConfiguration,
             object : CustomPeerConnectionObserver("localPeerCreation", peerConnection) {
                 override fun onIceCandidate(p0: IceCandidate?) {
@@ -116,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onAddStream(p0: MediaStream?) {
                     super.onAddStream(p0)
                 }
-            })!!
+            })!!*/
 
         peerConnection.createOffer(object : CustomSdpObserver("localCreateOffer") {
             override fun onCreateSuccess(p0: SessionDescription?) {
